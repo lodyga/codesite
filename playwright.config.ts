@@ -75,8 +75,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'python manage.py runserver',
+    command: 'DJANGO_ENV=local DJANGO_SECRET_KEY=dev-secret python manage.py runserver',
     url: 'http://localhost:8000',
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
   },
 });
