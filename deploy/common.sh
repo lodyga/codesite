@@ -5,7 +5,7 @@ deploy_code() {
 }
 
 install_dependencies() {
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt
 }
 
 run_migrations() {

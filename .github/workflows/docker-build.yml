@@ -14,7 +14,7 @@ permissions:
 jobs:
   build:
     name: Build and Push
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       IMAGE: ${{ vars.GAR_LOCATION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GAR_REPOSITORY }}/${{ vars.GAR_IMAGE_NAME }}
