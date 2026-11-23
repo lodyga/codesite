@@ -4,8 +4,8 @@
 # server availability ping, 
 # quick search in mirror servers by provider or architecture
 # restrict ai to only solving problem related questions
+# if tests failed, result vs expected
 
-# cheapest-flights-within-k-stops, preview, show more
 
 # Task Scheduler C++ input list to vector, JS add queue
 # Design Tweeter C++
@@ -31,6 +31,7 @@
 # Course Schedule II, judge should accept equivalent topological sort answers
 # Alien Dictionary print(Solution().alienOrder(["abc", "bcd", "cde"]) == "abcde" or "deabc" or) should accept different answers.
 # Guess Number Higher or Lower
+#preview, show more, also fix data display when types are now known, after all previews are fixed,  cheapest-flights-within-k-stops
 
 
 """

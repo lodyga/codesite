@@ -51,7 +51,8 @@ from .services.judge0 import execute_code
 from .services.problem_helpers import (
     parse_url,
     get_adjacent_slugs,
-    parse_problem_description
+    parse_problem_description,
+    get_filtered_problem_queryset,
 )
 from .services.test_case_parsing import get_field
 
@@ -125,36 +126,7 @@ class ProblemIndexView(ListView):
     template_name = "python_problems/problem_list.html"
 
     def get_queryset(self):
-        queryset = (
-            Problem.objects
-            .select_related("difficulty", "owner")
-            .prefetch_related("tags", "solutions__language")
-        )
-
-        query_text = self.request.GET.get("query_text")
-        difficulty_id = self.request.GET.get("difficulty_id")
-        tag_id = self.request.GET.get("tag_id")
-        language_id = self.request.GET.get("language_id")
-        order_by = self.request.GET.get("order_by", "created_at")
-
-        if difficulty_id and difficulty_id != "0":
-            queryset = queryset.filter(difficulty_id=difficulty_id)
-
-        if language_id and language_id != "0":
-            queryset = queryset.filter(
-                solutions__language_id=language_id
-            ).distinct()
-
-        if tag_id and tag_id != "0":
-            queryset = queryset.filter(tags__id=tag_id)
-
-        if query_text:
-            queryset = queryset.filter(
-                Q(tags__name__icontains=query_text) |
-                Q(title__icontains=query_text)
-            ).distinct()
-
-        return queryset.order_by(order_by)
+        return get_filtered_problem_queryset(self.request.GET)
 
     def get_paginate_by(self, queryset):
         return int(self.request.GET.get("problems_per_page", 7))
@@ -424,7 +396,20 @@ class ProblemDetailView(NextUrlMixin, DetailView):
             .defer("description")
         )
 
-        prev_problem_slug, next_problem_slug = get_adjacent_slugs(problem)
+        navigation_params = self.request.GET.copy()
+        navigation_next_url = self._get_next_url()
+        if navigation_next_url:
+            parsed_next_url = urlsplit(navigation_next_url)
+            navigation_params = dict(parse_qsl(
+                parsed_next_url.query,
+                keep_blank_values=True,
+            ))
+
+        prev_problem_slug, next_problem_slug = get_adjacent_slugs(
+            problem,
+            navigation_params,
+            language.name,
+        )
 
         question, examples = parse_problem_description(problem.description)
 
@@ -439,6 +424,7 @@ class ProblemDetailView(NextUrlMixin, DetailView):
             "examples": examples,
             "language": language,
             "language_id": language.id,
+            "navigation_next_url": navigation_next_url,
             'next_problem_slug': next_problem_slug,
             "output_container": "",
             "owner_id": solution_owner_id,

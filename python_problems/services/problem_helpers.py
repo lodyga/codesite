@@ -1,4 +1,5 @@
 import re
+from django.db.models import Q
 from python_problems.models import Problem, ProblemType
 
 
@@ -33,10 +34,72 @@ def parse_url(raw_url):
     return re.search(r"((https?)://)?(www\.)?(app\.)?(\w+\.\w+)(/)?", raw_url).group(5)
 
 
-def get_adjacent_slugs(problem):
-    problem_list = Problem.objects.filter()
+def get_filtered_problem_queryset(params, language_name=None):
+    queryset = (
+        Problem.objects
+        .select_related("difficulty", "owner")
+        .prefetch_related("tags", "solutions__language")
+    )
+
+    def get_param(name):
+        return params.get(name) if params is not None else None
+
+    query_text = get_param("query_text")
+    difficulty_id = get_param("difficulty_id")
+    tag_id = get_param("tag_id")
+    language_id = get_param("language_id")
+    order_by = get_param("order_by") or "created_at"
+
+    if difficulty_id and str(difficulty_id) != "0":
+        try:
+            queryset = queryset.filter(difficulty_id=int(difficulty_id))
+        except (TypeError, ValueError):
+            pass
+
+    if language_id and str(language_id) != "0":
+        try:
+            queryset = queryset.filter(
+                solutions__language_id=int(language_id)
+            ).distinct()
+        except (TypeError, ValueError):
+            pass
+    elif str(language_id) not in ("0",) and language_name:
+        queryset = queryset.filter(
+            solutions__language__name=language_name
+        ).distinct()
+
+    if tag_id and str(tag_id) != "0":
+        try:
+            queryset = queryset.filter(tags__id=int(tag_id))
+        except (TypeError, ValueError):
+            pass
+
+    if query_text:
+        queryset = queryset.filter(
+            Q(tags__name__icontains=query_text) |
+            Q(title__icontains=query_text)
+        ).distinct()
+
+    allowed_order_fields = {
+        "difficulty",
+        "title",
+        "owner",
+        "created_at",
+        "updated_at",
+    }
+    if order_by not in allowed_order_fields:
+        order_by = "created_at"
+
+    return queryset.order_by(order_by)
+
+
+def get_adjacent_slugs(problem, params=None, language_name=None):
+    problem_list = get_filtered_problem_queryset(params, language_name)
 
     problem_ids = list(problem_list.values_list("id", flat=True))
+
+    if problem.id not in problem_ids:
+        return (None, None)
 
     problem_index = problem_ids.index(problem.id)
 

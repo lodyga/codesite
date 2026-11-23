@@ -1034,6 +1034,42 @@ class ProblemIndexViewTests(TestCase):
 
 
 class SolutionDetailViewTests(TestCase):
+    def test_previous_and_next_apply_problem_list_filters_and_sorting(self):
+        difficulty = Difficulty.objects.create(name="Easy")
+        excluded_difficulty = Difficulty.objects.create(name="Hard")
+        language, _ = Language.objects.get_or_create(name="Python")
+
+        alpha = create_sample_problem(
+            title="Alpha", difficulty=difficulty)
+        beta = create_sample_problem(
+            title="Beta", difficulty=difficulty)
+        gamma = create_sample_problem(
+            title="Gamma", difficulty=difficulty)
+        excluded = create_sample_problem(
+            title="Delta", difficulty=excluded_difficulty)
+
+        for problem in (alpha, beta, gamma, excluded):
+            create_sample_solution(problem=problem, language=language)
+
+        next_url = (
+            f'{reverse("python_problems:problem-index")}'
+            f'?difficulty_id={difficulty.id}&language_id={language.id}'
+            '&order_by=title'
+        )
+        response = self.client.get(
+            reverse(
+                "python_problems:problem-detail",
+                kwargs={"slug": beta.slug, "language": language.name},
+            ),
+            {"next": next_url},
+        )
+
+        self.assertEqual(response.context["prev_problem_slug"], alpha.slug)
+        self.assertEqual(response.context["next_problem_slug"], gamma.slug)
+        content = response.content.decode()
+        self.assertIn(f'/{alpha.slug}/Python/?next=', content)
+        self.assertIn(f'/{gamma.slug}/Python/?next=', content)
+
     def test_right_template(self):
         solution = create_sample_solution()
 

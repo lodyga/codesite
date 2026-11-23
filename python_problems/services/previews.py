@@ -15,7 +15,7 @@ def is_grid_shape(data):
     return True
 
 
-def draw_grid(data, parameter_name):
+def draw_grid(data, parameter_name, parameter_type):
     if not is_grid_shape(data):
         return
 
@@ -35,6 +35,9 @@ def draw_grid(data, parameter_name):
                 '1': '■',
                 '2': 'X',
                 "2147483647": '∞',
+                "-2147483648": '-∞',
+                "9223372036854775807": '∞',
+                "9223372036854775808": '-∞',
                 'O': 'O',
                 'X': 'X'
             }
@@ -42,16 +45,28 @@ def draw_grid(data, parameter_name):
             char_map = {char: char for char in chars}
             char_map['-1'] = '█'
 
-    grid = """┌""" + '─' * (cols*2 + 1) + "┐\n"
+    grid = ""
+    max_col_lens = [0] * cols
 
-    for line in data:
-        grid_line = "".join(
-            char_map.get(str(char), "J")
-            for char in line
-        )
-        grid = grid + "│ " + " ".join(grid_line) + " │\n"
+    for col in range(cols):
+        for row in range(rows):
+            max_col_lens[col] = max(
+                max_col_lens[col], len(str(data[row][col])))
 
-    grid = grid + """└""" + '─' * (cols*2 + 1) + '┘'
+    for row in range(rows):
+        grid_line = "│ "
+
+        for col in range(cols):
+            val = data[row][col]
+            str_val = char_map.get(str(val), "J")
+            val_len = len(str_val)
+            grid_line += str_val + " " * (max_col_lens[col] - val_len) + " "
+
+        grid_line = grid_line + "│\n"
+        grid = grid + grid_line
+
+    grid = """┌""" + '─' * (sum(max_col_lens) + cols + 1) + "┐\n" + grid
+    grid = grid + """└""" + '─' * (sum(max_col_lens) + cols + 1) + '┘'
 
     return (parameter_name, grid)
 
@@ -115,7 +130,7 @@ def draw_list(heights, parameter_name):
     lines = []
 
     for level in range(max_height, 0, -1):
-        row = f"{level:>2} | "
+        row = f"{level:>2} │ "
 
         for h in heights:
             if h >= level:
@@ -139,24 +154,31 @@ def draw_ascii(data, problem_type, parameter_name, parameter_type):
     █▓▒░#║╬■⬛🧱~≈∼≋≀·○🌊💧■▲◆●⬤⛰GO⊙✦★
     """
     match parameter_type:
+        case "int":
+            return
+        case "list[list[int]]":
+            return draw_grid(data, parameter_name, parameter_type)
+
+    # This part to be remove because all data should have type.
+    match parameter_type:
         case ProblemType.LINKED_LIST:
             return draw_linked_list(data, parameter_name)
         case ProblemType.BINARY_TREE:
             return draw_tree(data, parameter_name)
         case "list[int]":
             return draw_list(data, parameter_name)
-        case "list[list[int]]" | "list[list[string]]" |"grid":
-            return draw_grid(data, parameter_name)
+        case "list[list[int]]" | "list[list[string]]" | "grid":
+            return draw_grid(data, parameter_name, parameter_type)
 
     if (
-        problem_type == ProblemType.BINARY_TREE 
+        problem_type == ProblemType.BINARY_TREE
         and isinstance(data, list)
     ):
         bt = binarytree.build2(data).__str__()
         return (parameter_name, bt)
 
     elif (
-        problem_type == ProblemType.LINKED_LIST 
+        problem_type == ProblemType.LINKED_LIST
         and isinstance(data, list)
     ):
         return draw_linked_list(data, parameter_name)
@@ -169,4 +191,4 @@ def draw_ascii(data, problem_type, parameter_name, parameter_type):
         and isinstance(data, list)
         and isinstance(data[0], list)
     ):
-        return draw_grid(data, parameter_name)
+        return draw_grid(data, parameter_name, parameter_type)
