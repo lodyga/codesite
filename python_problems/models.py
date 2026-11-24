@@ -57,6 +57,7 @@ class ProblemType(models.TextChoices):
     CLASS = ("class", "Class Design")
     BINARY_TREE = ("binary_tree", "Binary Tree")
     LINKED_LIST = ("linked_list", "Linked List")
+    GRAPH = ("graph", "Graph")
 
 
 class ComparisonType(models.TextChoices):

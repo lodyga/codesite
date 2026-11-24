@@ -22,7 +22,7 @@ from .services.code_assembly import (
     build_validation_in_place_payload,
 )
 from .services.judge0 import execute_code, handle_response_error
-from .services.previews import draw_linked_list
+from .services.previews import draw_graph, draw_linked_list
 from .services.test_case_expression import build_test_case_expression
 from .services.ui_test_cases import (
     get_ui_test_cases,
@@ -654,6 +654,96 @@ class ProblemScriptTests(TestCase):
         self.assertEqual(
             preview, ("head", "(3) -> (2) -> (0) -> (-4) -> ↺ index 1 (2)"))
 
+    def test_draw_graph_edge_list_preserves_components_and_isolated_nodes(self):
+        preview = draw_graph(
+            [[0, 1], [1, 2], [2, 3], [4, 5]],
+            "edges",
+            "edge_list",
+            False,
+            7,
+        )
+
+        self.assertEqual(
+            preview,
+            (
+                "edges",
+                "component 1:\n"
+                "(0)\n"
+                "└── (1)\n"
+                "   └── (2)\n"
+                "      └── (3)\n\n"
+                "component 2:\n"
+                "(4)\n"
+                "└── (5)\n\n"
+                "component 3:\n"
+                "(6)",
+            ),
+        )
+
+    def test_draw_graph_adjacency_matrix_and_directed_edges(self):
+        matrix_preview = draw_graph(
+            [[1, 1, 0], [1, 1, 0], [0, 0, 1]],
+            "isConnected",
+            "adjacency_matrix",
+            False,
+        )
+        directed_preview = draw_graph(
+            [[0, 1], [1, 2], [2, 0]], "edges", "edge_list", True)
+
+        self.assertIn("extra edges: (0) -- (0), (1) -- (1)", matrix_preview[1])
+        self.assertIn("extra edges: (2) -- (2)", matrix_preview[1])
+        self.assertIn("├─> (1)", directed_preview[1])
+        self.assertIn("extra edges: (1) -> (2)", directed_preview[1])
+
+    def test_draw_graph_rejects_invalid_data_and_truncates(self):
+        self.assertIsNone(draw_graph(
+            [[0, 1, 2]], "edges", "edge_list", False))
+        self.assertIsNone(draw_graph(
+            [[0, 1], [0, 0]], "matrix", "adjacency_matrix", False))
+
+        preview = draw_graph(
+            [[index, index + 1] for index in range(21)],
+            "edges",
+            "edge_list",
+            False,
+        )
+
+        self.assertIn(
+            "… truncated: showing 12 of 22 nodes and 11 of 21 edges",
+            preview[1],
+        )
+
+    def test_get_ui_test_cases_draws_only_configured_graph_parameter(self):
+        problem = create_sample_problem(title="Graph Preview")
+        problem.metadata = {
+            "problem_type": ProblemType.GRAPH,
+            "comparison_type": "exact",
+            "method_name": "countComponents",
+            "parameters": [
+                {"name": "n", "type": "int"},
+                {"name": "edges", "type": "list[list[int]]"},
+                {"name": "other", "type": "list[list[int]]"},
+            ],
+            "return_type": "int",
+            "graph_parameter": "edges",
+            "graph_representation": "edge_list",
+            "graph_vertex_count_parameter": "n",
+            "directed": False,
+        }
+        problem.save(update_fields=["metadata"])
+        create_problem_test_case(
+            problem=problem,
+            data={
+                "inputs": [4, [[0, 1], [2, 3]], [[1, 0], [0, 1]]],
+                "expected": 2,
+            },
+        )
+
+        ui_test_case = get_ui_test_cases(problem, "Python")[0]
+
+        self.assertEqual(len(ui_test_case["preview"]), 1)
+        self.assertEqual(ui_test_case["preview"][0][0], "edges")
+
 
 class ProblemTestCaseCrudViewTests(TestCase):
     def setUp(self):
@@ -929,7 +1019,8 @@ class ProblemIndexViewTests(TestCase):
 
     def test_language_filter_bar_shows_languages_with_seven_solved_problems(self):
         for index in range(6):
-            problem = create_sample_problem(title=f"Additional problem {index}")
+            problem = create_sample_problem(
+                title=f"Additional problem {index}")
             create_sample_solution(
                 problem=problem,
                 language=self.language_python,
@@ -939,11 +1030,13 @@ class ProblemIndexViewTests(TestCase):
 
         languages = list(response.context["language_filter_list"])
         self.assertEqual(
-            [(language.name, language.problem_count) for language in languages],
+            [(language.name, language.problem_count)
+             for language in languages],
             [("Python", 7)],
         )
         self.assertContains(response, 'id="problemLanguageFilter"')
-        self.assertContains(response, 'class="fab fa-python language-filter-icon')
+        self.assertContains(
+            response, 'class="fab fa-python language-filter-icon')
         self.assertContains(response, "--language-color: #3776AB")
         self.assertContains(response, "(7)")
         self.assertNotContains(response, "JavaScript</button>")
@@ -993,7 +1086,8 @@ class ProblemIndexViewTests(TestCase):
         self.assertEqual(response.context["page_obj"].number, 2)
         content = response.content.decode()
         for form_id in ("search_bar", "problemLanguageFilter"):
-            form = content.split(f'id="{form_id}"', 1)[1].split("</form>", 1)[0]
+            form = content.split(f'id="{form_id}"', 1)[
+                1].split("</form>", 1)[0]
             self.assertIn('name="page" value="2"', form)
 
     def test_language_filter_uses_last_available_page_when_current_page_is_too_high(self):
@@ -1173,7 +1267,8 @@ class SolutionDetailViewTests(TestCase):
             f'data-language-name="{javascript.name}"',
         )
         self.assertContains(response, f'value="{java.id}"')
-        self.assertNotContains(response, f'value="{python.id}">{python}</option>')
+        self.assertNotContains(
+            response, f'value="{python.id}">{python}</option>')
 
     def test_back_link_uses_next_url(self):
         solution = create_sample_solution()

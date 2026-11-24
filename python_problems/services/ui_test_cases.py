@@ -42,6 +42,11 @@ def get_method_ui_test_cases(problem, language):
     metadata = get_problem_metadata(problem)
     problem_type = metadata["problem_type"]
     parameters = metadata["parameters"]
+    graph_vertex_count = None
+    graph_metadata = None
+
+    if problem_type == ProblemType.GRAPH:
+        graph_metadata = metadata
     ui_test_cases = []
 
     for problem_test_case in test_cases:
@@ -57,12 +62,26 @@ def get_method_ui_test_cases(problem, language):
             for parameter, value in zip(parameters, inputs)
         )
 
+        if graph_metadata:
+            vertex_count_parameter = graph_metadata.get(
+                "graph_vertex_count_parameter")
+            if vertex_count_parameter:
+                graph_vertex_count = next(
+                    (
+                        value for value, parameter in zip(inputs, parameters)
+                        if parameter["name"] == vertex_count_parameter
+                    ),
+                    None,
+                )
+
         for data, parameter in zip(inputs, parameters):
             if preview := draw_ascii(
                 data,
                 problem_type,
                 parameter["name"],
                 parameter["type"],
+                graph_metadata,
+                graph_vertex_count,
             ):
                 preview_data.append(preview)
 
@@ -71,6 +90,7 @@ def get_method_ui_test_cases(problem, language):
             problem_type,
             None,  # Better output type/parameter name?
             metadata["return_type"],
+            graph_metadata,
         ):
             preview_data.append(preview)
 
