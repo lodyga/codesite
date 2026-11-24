@@ -4,7 +4,25 @@ from django.core.exceptions import ValidationError
 from .models import Problem, Solution, ProblemTestCase, ProblemType
 
 
+class PrettyJSONField(forms.JSONField):
+    def prepare_value(self, value):
+        if isinstance(value, forms.fields.InvalidJSONInput):
+            return value
+        if value is None:
+            return ""
+        return json.dumps(
+            value,
+            indent=2,
+            ensure_ascii=False,
+            cls=self.encoder,
+        )
+
+
 class ProblemForm(forms.ModelForm):
+    metadata = PrettyJSONField(
+        required=False,
+        help_text="Problem metadata",
+    )
     argument_names = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={"rows": 2}),
@@ -44,6 +62,13 @@ class ProblemForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self._set_problem_type_dependent_fields()
+
+        metadata_field = self.fields["metadata"]
+        metadata_field.widget.attrs.update({
+            "rows": 16,
+            "class": "form-control font-monospace",
+            "spellcheck": "false",
+        })
 
         if self.instance.pk and self.instance.argument_names:
             self.initial["argument_names"] = json.dumps(

@@ -214,6 +214,31 @@ class ProblemFormTests(TestCase):
 
         self.assertEqual(form.initial["argument_names"], '["nums", "target"]')
 
+    def test_problem_form_initial_metadata_is_pretty_json(self):
+        problem = create_sample_problem()
+        problem.metadata = {
+            "problem_type": "function",
+            "parameters": [
+                {"name": "nums", "type": "List[int]"},
+            ],
+        }
+        problem.save(update_fields=["metadata"])
+
+        form = ProblemForm(instance=problem)
+
+        self.assertEqual(
+            form["metadata"].value(),
+            '{\n'
+            '  "problem_type": "function",\n'
+            '  "parameters": [\n'
+            '    {\n'
+            '      "name": "nums",\n'
+            '      "type": "List[int]"\n'
+            '    }\n'
+            '  ]\n'
+            '}',
+        )
+
     def test_problem_form_saves_problem_testcases(self):
         owner = create_sample_user()
         difficulty = Difficulty.objects.create(name="Easy")

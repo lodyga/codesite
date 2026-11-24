@@ -282,7 +282,8 @@ def _draw_graph_component(component, neighbours, edges, directed):
         for index, child in enumerate(ordered_children):
             is_last = index == len(ordered_children) - 1
             branch = "└" if is_last else "├"
-            lines.append(f"{prefix}{branch}{connector(vertex, child)}({child})")
+            lines.append(
+                f"{prefix}{branch}{connector(vertex, child)}({child})")
             add_children(child, prefix + ("   " if is_last else "│  "))
 
     add_children(root)
@@ -318,7 +319,8 @@ def draw_graph(data, parameter_name, representation, directed, vertex_count=None
     }
     selected_edges = set(sorted(selected_edges)[:20])
 
-    components, neighbours = _graph_components(selected_vertices, selected_edges)
+    components, neighbours = _graph_components(
+        selected_vertices, selected_edges)
     sections = []
     for index, component in enumerate(components, start=1):
         lines = [f"component {index}:"]
