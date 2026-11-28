@@ -157,15 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
    }
 
-   const previewContentBtn = document.getElementById('previewContentBtn');
-   const previewContents = document.querySelectorAll('.previewContent');
-
-   if (previewContentBtn) {
-      if (previewContents.length === 0) {
-         previewContentBtn.checked = false;
-         previewContentBtn.disabled = true;
-      }
-
+   document.querySelectorAll('.preview-content-btn').forEach((previewContentBtn) => {
+      const testCase = previewContentBtn.closest('.problemTestCaseContent');
+      const previewContents = testCase.querySelectorAll('.previewContent');
       const setPreviewVisibility = (isVisible) => {
          previewContents.forEach((content) => {
             content.style.display = isVisible ? '' : 'none';
@@ -177,5 +171,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       setPreviewVisibility(previewContentBtn.checked);
-   }
+   });
 })

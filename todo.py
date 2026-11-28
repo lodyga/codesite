@@ -1,9 +1,6 @@
-
-# swap examples in description with test cases or just remove them, maybe mark first test cases as examples
 # format metadata like json in update problem
-# pythonanywhere list<int>
-# additional testing in pipeline on vm?
-# automate a little on pythonanywhere
+# enable word wrap disable word wrap with icons
+# swap examples in description with test cases or just remove them, maybe mark first test cases as examples
 # server availability ping, 
 # quick search in mirror servers by provider or architecture
 # restrict ai to only solving problem related questions

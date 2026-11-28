@@ -1,76 +1,53 @@
-<div class="row mb-2">
-  <button class="btn btn-outline-secondary py-0 mb-2"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#problemCode"
-          aria-expanded="false"
-          aria-controls="problemCode">
-    Code Area:
-    <i class="fas fa-chevron-up"></i>
-  </button>
-  <div class="row collapse show" id="problemCode">
-    <div class="col">
-      <div class="row">
-        <div class="col">
-          <span class="badge bg-secondary col-auto">Code input:</span>
-          <form id="codeForm"
+<div class="problem-code-area">
+  <form id="codeForm"
                 action="{% url 'python_problems:problem-detail' problem.slug language.name %}"
                 method="post"
-                class="mb-2">
+                class="code-form">
             {% csrf_token %}
             <input id="codeFormAction" name="code_form_action" type="hidden" value="">
             <input id="selected-solution-id"
                    name="selected_solution_id"
                    type="hidden"
                    value="{{ selected_solution_id }}">
-            <div class="code-area-container border border-warning">
-              <textarea cols="80" id="codeContainer" name="code_container" rows="20">{{ source_code }}</textarea>
-            </div>
-            <div class="row">
-              <div class="col-auto">
-                <button class="btn btn-warning py-0 {% if language_id > 2 and language_id < 6 %}d-none{% endif %}"
+            <div class="code-editor-toolbar">
+              <span class="code-editor-language"><i class="fas fa-code"></i> {{ language }}</span>
+              <div class="code-editor-actions">
+                <button class="btn btn-sm btn-outline-secondary {% if language_id > 2 and language_id < 6 %}d-none{% endif %}"
                         id="run-code-button"
                         name="run_code_button"
                         title="Run current code: `Ctrl + '`"
                         type="button"
                         value="True">
                   Run
-                  <span class="spinner-border spinner-border-sm d-none"
-                        id="run-code-button-spinner"></span>
+                  <span class="spinner-border spinner-border-sm d-none" id="run-code-button-spinner"></span>
                 </button>
-              </div>
-              <div class="col-auto">
-                <button class="btn btn-primary py-0 {% if language_id > 2 and language_id < 6 %}d-none{% endif %}"
+                <button class="btn btn-sm btn-primary {% if language_id > 2 and language_id < 6 %}d-none{% endif %}"
                         id="test-code-button"
                         name="test_code_button"
                         type="button"
                         title="Validate against test cases: `Ctrl + Enter`"
                         value="True">
-                  Validate
-                  <span class="spinner-border spinner-border-sm d-none"
-                        id="test-code-button-spinner"></span>
+                  Run tests
+                  <span class="spinner-border spinner-border-sm d-none" id="test-code-button-spinner"></span>
                 </button>
-              </div>
-              <div class="col-auto">
-                <button class="btn btn-success py-0"
+                <button class="btn btn-sm btn-success"
                         id="submitCodeButton"
                         name="submit_code_button"
                         type="button"
                         title="Under construction. Save code for posterity."
                         value="True">
                   Submit
-                  <span class="spinner-border spinner-border-sm d-none"
-                        id="submitCodeButtonSpinner"></span>
+                  <span class="spinner-border spinner-border-sm d-none" id="submitCodeButtonSpinner"></span>
                 </button>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
-      <div class="row mb-2">
-        <div>
-          <span class="badge bg-secondary col-auto">Code output:</span>
-          <div class="form-control mb-2 col-auto" name="output_container">
+            <div class="code-area-container">
+              <textarea cols="80" id="codeContainer" name="code_container" rows="20">{{ source_code }}</textarea>
+            </div>
+  </form>
+  <div class="code-output-panel">
+          <span class="code-output-title">Output</span>
+          <div class="form-control" name="output_container">
             {% for pair in output_container %}
               <div>
                 <code class="text-body">{{ pair.0 }}: </code>
@@ -78,13 +55,10 @@
               </div>
             {% endfor %}
           </div>
-        </div>
-      </div>
-      {% if "TypeError: 'type' object is not subscriptable" in output_container %}
-        <div class="alert alert-danger">
-          <b>Python 3.8: Import types from typing (e.g., List[str] instead of list[str]).</b>
-        </div>
-      {% endif %}
-    </div>
   </div>
+  {% if "TypeError: 'type' object is not subscriptable" in output_container %}
+    <div class="alert alert-danger m-3">
+      <b>Python 3.8: Import types from typing (e.g., List[str] instead of list[str]).</b>
+    </div>
+  {% endif %}
 </div>

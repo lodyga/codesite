@@ -13,6 +13,7 @@ data.json
 .codex
 .env
 codesite.env
+/fixtures
 
 
 # Playwright

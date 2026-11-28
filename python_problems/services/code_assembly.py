@@ -20,6 +20,11 @@ def clean_python_types(source_code):
         source_code
     )
     source_code = re.sub(
+        r"->\s*list\[",
+        "-> List[",
+        source_code
+    )
+    source_code = re.sub(
         r"\[list\[",
         "[List[",
         source_code
@@ -30,8 +35,23 @@ def clean_python_types(source_code):
         source_code
     )
     source_code = re.sub(
+        r"->\s*tuple\[",
+        "-> Tuple[",
+        source_code
+    )
+    source_code = re.sub(
         r"\[tuple\[",
         "[Tuple[",
+        source_code
+    )
+    source_code = re.sub(
+        r":\s*ListNode\s*\|\s*None\s*",
+        ": Optional[ListNode]",
+        source_code
+    )
+    source_code = re.sub(
+        r"->\s*ListNode\s*\|\s*None\s*",
+        "-> Optional[ListNode]",
         source_code
     )
     source_code = re.sub(
@@ -40,8 +60,8 @@ def clean_python_types(source_code):
         source_code
     )
     source_code = re.sub(
-        r":\s*ListNode\s*\|\s*None\s*",
-        ": Optional[ListNode]",
+        r"->\s*TreeNode\s*\|\s*None\s*",
+        "-> Optional[TreeNode]",
         source_code
     )
 

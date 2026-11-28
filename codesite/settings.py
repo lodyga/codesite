@@ -114,6 +114,9 @@ else:
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", ""),
             "PORT": os.getenv("DB_PORT", ""),
+            "OPTIONS": {
+                "sslmode": "require",
+            } if os.getenv("DB_ENGINE") == "django.db.backends.postgresql" else {},
         }
     }
 

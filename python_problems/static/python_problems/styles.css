@@ -279,6 +279,289 @@
   font-size: 1rem;
 }
 
+/* Problem detail workspace */
+.problem-workspace {
+  max-width: 1540px;
+  margin: 1rem auto 0;
+  padding: 0 0.75rem;
+}
+
+.problem-workspace-header {
+  margin-bottom: 0.75rem;
+}
+
+.problem-workspace-navigation,
+.problem-workspace-title-row,
+.code-editor-toolbar,
+.workspace-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.problem-workspace-navigation__back,
+.problem-workspace-navigation__next,
+.problem-workspace-title-actions,
+.code-editor-actions,
+.problem-related-problems {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.problem-related-problems {
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.problem-related-problems .btn {
+  max-width: 16rem;
+}
+
+.problem-workspace-title-row {
+  margin-top: 0.9rem;
+}
+
+.problem-workspace-title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 650;
+}
+
+.problem-workspace-panes {
+  display: grid;
+  grid-template-columns: minmax(22rem, 0.9fr) minmax(32rem, 1.1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.problem-statement-panel,
+.problem-coding-panel {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.problem-statement-panel {
+  max-height: calc(100vh - 11rem);
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.workspace-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.6rem;
+  background: var(--bs-body-bg);
+  box-shadow: 0 0.15rem 0.45rem rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+}
+
+.problem-metadata-card {
+  padding-bottom: 0.35rem;
+}
+
+.workspace-card .row {
+  --bs-gutter-x: 0.75rem;
+}
+
+.workspace-card .btn[data-bs-toggle="collapse"],
+.workspace-section-title {
+  border: 0;
+  color: var(--bs-body-color);
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+.workspace-card .btn[data-bs-toggle="collapse"]:hover,
+.workspace-section-title:hover {
+  color: var(--bs-primary);
+}
+
+.problem-metadata-card label {
+  margin-bottom: 0.25rem !important;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.problem-metadata-card .tags {
+  margin: 0.1rem 0.2rem 0.1rem 0;
+}
+
+.problem-statement-panel pre {
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.exampleContent {
+  padding: 0.8rem;
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: 0.4rem;
+  background: var(--bs-tertiary-bg);
+}
+
+.code-workspace-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.code-workspace-tabs {
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.45rem 0.65rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg);
+}
+
+.code-workspace-tab {
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0.3rem 0.3rem 0 0;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.code-workspace-tab:hover,
+.code-workspace-tab.active {
+  color: var(--bs-body-color);
+}
+
+.code-workspace-tab.active {
+  border-bottom-color: var(--bs-primary);
+  background: var(--bs-body-bg);
+}
+
+.problem-code-area .workspace-section-header {
+  min-height: 3rem;
+  padding: 0 0.9rem;
+}
+
+.workspace-section-title {
+  padding: 0;
+  text-decoration: none;
+}
+
+.code-editor-toolbar {
+  padding: 0.65rem 0.9rem;
+  background: var(--bs-tertiary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.code-editor-language,
+.code-output-title {
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.code-area-container .CodeMirror {
+  height: min(52vh, 42rem) !important;
+  font-size: 0.9rem;
+}
+
+.code-output-panel {
+  padding: 0.75rem 0.9rem 0.9rem;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.code-output-title {
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.code-output-panel .form-control {
+  min-height: 3rem;
+  max-height: 12rem;
+  overflow: auto;
+  background: var(--bs-tertiary-bg);
+}
+
+.testcase-workspace-card .btn[data-bs-toggle="collapse"] {
+  width: 100%;
+}
+
+.testcase-workspace-card #problemTestCasesContainer {
+  width: 100%;
+}
+
+.testcase-workspace-card .test-case-value {
+  width: 100%;
+  background: var(--bs-tertiary-bg);
+}
+
+.solution-code-panel {
+  padding: 1rem;
+}
+
+.solution-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.solution-controls .col-auto {
+  margin-bottom: 0 !important;
+}
+
+.solution-code-panel .CodeMirror {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.35rem;
+}
+
+@media (max-width: 1199.98px) {
+  .problem-workspace-panes {
+    grid-template-columns: minmax(18rem, 0.85fr) minmax(26rem, 1.15fr);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .problem-workspace-panes {
+    grid-template-columns: 1fr;
+  }
+
+  .problem-statement-panel {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .code-area-container .CodeMirror {
+    height: 32rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .problem-workspace {
+    padding: 0 0.25rem;
+  }
+
+  .workspace-nav-label {
+    display: none;
+  }
+
+  .problem-workspace-title-row,
+  .code-editor-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .code-editor-actions {
+    width: 100%;
+  }
+
+  .code-editor-actions .btn {
+    flex: 1;
+  }
+
+  .code-area-container .CodeMirror {
+    height: 26rem !important;
+  }
+}
+
 .problem-compact-item .problem-difficulty {
   font-size: 0.85rem;
 }

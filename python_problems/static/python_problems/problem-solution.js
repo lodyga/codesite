@@ -1,41 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-   const solutionPanel = document.getElementById('solution-panel');
-   const infoToggle = document.querySelector('[data-bs-target="#solution-panel"]');
-
-   if (!solutionPanel || !infoToggle) {
-      return;
-   }
-
-   const icon = infoToggle.querySelector('i');
-   const solutionCollapse = new bootstrap.Collapse(solutionPanel, {
-      toggle: false,
-   });
-
-   const isProblemSolutionHidden = localStorage.getItem('solutionPanelState') === 'false';
-
-   if (isProblemSolutionHidden) {
-      solutionCollapse.hide();
-      icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-      infoToggle.setAttribute('aria-expanded', 'false');
-   } else {
-      solutionCollapse.show();
-      localStorage.setItem('solutionPanelState', 'true');
-      icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-      infoToggle.setAttribute('aria-expanded', 'true');
-   }
-
-   solutionPanel.addEventListener('shown.bs.collapse', () => {
-      localStorage.setItem('solutionPanelState', 'true');
-      icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-      infoToggle.setAttribute('aria-expanded', 'true');
-   });
-
-   solutionPanel.addEventListener('hidden.bs.collapse', () => {
-      localStorage.setItem('solutionPanelState', 'false');
-      icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-      infoToggle.setAttribute('aria-expanded', 'false');
-   });
-
    const addSolutionForm = document.getElementById('add-solution-form');
    const addSolutionLanguage = document.getElementById('add-solution-language-id');
    const addSolutionNextUrl = document.getElementById('add-solution-next-url');
@@ -99,17 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
    function showProblemCodePanel() {
       const targetSelector = copyValidateSolutionBtn?.dataset.bsTarget;
-      const problemCodePanel = targetSelector ? document.querySelector(targetSelector) : null;
+      const codeEditorTab = targetSelector ? document.querySelector(targetSelector) : null;
 
-      if (!problemCodePanel || typeof bootstrap === 'undefined') {
+      if (!codeEditorTab) {
          return;
       }
 
-      const problemCodeCollapse = bootstrap.Collapse.getOrCreateInstance(problemCodePanel, {
-         toggle: false,
-      });
-
-      problemCodeCollapse.show();
+      codeEditorTab.click();
    }
 
    function showSolution(idx) {
@@ -232,7 +191,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       showProblemCodePanel();
-      testCodeButton.click();
+      window.requestAnimationFrame(() => {
+         if (typeof codeEditor !== 'undefined' && codeEditor) {
+            codeEditor.refresh();
+         }
+         testCodeButton.click();
+      });
    });
 
 

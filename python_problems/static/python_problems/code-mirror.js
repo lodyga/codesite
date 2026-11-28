@@ -67,26 +67,6 @@ window.ensureSolutionViewer = ensureSolutionViewer;
 window.setSolutionViewerContent = setSolutionViewerContent;
 
 document.addEventListener('DOMContentLoaded', () => {
-   // Collapsable paragraph.
-   const problemCodeElements = document.getElementById('problemCode');
-   const codeCollapse = new bootstrap.Collapse(problemCodeElements, { toggle: false });
-   const codeToggle = document.querySelector('[data-bs-target="#problemCode"]');
-   const icon = codeToggle.querySelector('i');
-   const isProblemCodeVisible = localStorage.getItem('problemCodeState') !== 'false';
-   isProblemCodeVisible ? codeCollapse.show() : codeCollapse.hide();
-
-   problemCodeElements.addEventListener('shown.bs.collapse', () => {
-      localStorage.setItem('problemCodeState', 'true');
-      icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-      codeToggle.setAttribute('aria-expanded', 'true');
-   });
-
-   problemCodeElements.addEventListener('hidden.bs.collapse', () => {
-      localStorage.setItem('problemCodeState', 'false');
-      icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-      codeToggle.setAttribute('aria-expanded', 'false');
-   });
-
    const codeContainer = document.getElementById('codeContainer');
    const theme = getTheme();
    const languageId = getLanguageId();
@@ -105,14 +85,48 @@ document.addEventListener('DOMContentLoaded', () => {
    window.codeEditor = codeEditor;  // For playwright
    codeEditor.setSize(null, 'auto');
 
-   const solutionPanel = document.getElementById('solution-panel');
-   
-   if (solutionPanel) {
-      solutionPanel.addEventListener('shown.bs.collapse', () => {
+   const codeWorkspaceTabs = document.querySelectorAll('.code-workspace-tab');
+
+   function activateCodeWorkspaceTab(tab) {
+      const targetSelector = tab.dataset.bsTarget;
+      const targetPanel = targetSelector ? document.querySelector(targetSelector) : null;
+
+      if (!targetPanel) {
+         return;
+      }
+
+      codeWorkspaceTabs.forEach((candidate) => {
+         const candidateTarget = candidate.dataset.bsTarget;
+         const candidatePanel = candidateTarget ? document.querySelector(candidateTarget) : null;
+         const isActive = candidate === tab;
+
+         candidate.classList.toggle('active', isActive);
+         candidate.setAttribute('aria-selected', String(isActive));
+         candidatePanel?.classList.toggle('active', isActive);
+         candidatePanel?.classList.toggle('show', isActive);
+      });
+
+      if (tab.id === 'solution-code-tab') {
+         ensureSolutionViewer();
+      } else {
+         codeEditor.refresh();
+      }
+   }
+
+   codeWorkspaceTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+         activateCodeWorkspaceTab(tab);
+      });
+   });
+
+   const solutionCodeTab = document.getElementById('solution-code-tab');
+
+   if (solutionCodeTab) {
+      solutionCodeTab.addEventListener('shown.bs.tab', () => {
          ensureSolutionViewer();
       });
 
-      if (solutionPanel.classList.contains('show') || window.location.hash === '#solution-panel') {
+      if (solutionCodeTab.classList.contains('active')) {
          ensureSolutionViewer();
       }
    }

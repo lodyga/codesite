@@ -160,7 +160,7 @@ py manage.py showmigrations python_problems
 # backup db.sqlite3
 python manage.py dumpdata > fixtures/db_data.json
 # restore
-py manage.py load_db fixtures/db_data.json 
+py manage.py load_db fixtures/db_data.json
 
 # backup/restore db without a script
 # backup
@@ -180,10 +180,13 @@ python manage.py dumpdata \
   --exclude contenttypes \
   --exclude sessions \
   --exclude auth.permission \
-  > data.json
+  --indent 2 \
+  > fixtures/sqlite_backup.json
 
 # Worked for PostqreSQL
-python manage.py dumpdata --natural-foreign --natural-primary -e contenttypes -e auth.permission > data.json
+python manage.py dumpdata \
+  --natural-foreign 
+--natural-primary -e contenttypes -e auth.permission > data.json
 
 python manage.py dumpdata \
   --natural-primary \
@@ -193,18 +196,29 @@ python manage.py dumpdata \
   --indent=2 \
   --output=/tmp/codesite_data.json
 
-# Worked for Google Cloud MySQL
+# dump specific table
 python manage.py dumpdata auth.User \
   --natural-foreign \
   --natural-primary \
   --indent 2 \
-  > data.json
+  > fixtures/data.json
 
 # Check active database backend at runtime.
 $ python manage.py shell
 >> from django.db import connection
 >> print(connection.vendor)
 >> print(connection.settings_dict)
+
+# Check active database backend at runtime.
+python manage.py shell -c "
+from django.db import connection
+print('ENGINE:', connection.vendor)
+print('DATABASE:', connection.settings_dict['NAME'])
+print('HOST:', connection.settings_dict['HOST'])
+connection.ensure_connection()
+print('CONNECTION: OK')
+"
+
 
 unset DB_ENGINE DB_NAME DB_HOST DB_PORT DB_USER DB_PASSWORD
 python manage.py shell -c'

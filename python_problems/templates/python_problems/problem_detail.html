@@ -16,23 +16,58 @@
   {{ ai_problem_context|json_script:"ai-problem-context" }}
 {% endblock head %}
 {% block content %}
-  <div class="row">
-    {# Left Panel #}
-    <div class="col-md-3 p-3">{% include "python_problems/partials/_problem_detail_left_panel.html" %}</div>
-    {# Middle Panel #}
-    <div class="col-md-8 p-3">
-      {# Problem title #}
-      {% include "python_problems/partials/_problem_detail_title.html" %}
-      {# Problem info #}
-      {% include "python_problems/partials/_problem_detail_info.html" %}
-      {# Problem description #}
-      {% include "python_problems/partials/_problem_detail_description.html" %}
-      {# Test cases #}
-      {% include "python_problems/partials/_problem_detail_test_cases.html" %}
-      {# Code area #}
-      {% include "python_problems/partials/_problem_detail_code_area.html" %}
-      {# Show solution #}
-      {% include "python_problems/partials/_problem_detail_solution.html" %}
+  <main class="problem-workspace">
+    {% include "python_problems/partials/_problem_detail_title.html" %}
+    <div class="problem-workspace-panes">
+      <section class="problem-statement-panel" aria-label="Problem statement">
+        {# Problem metadata and statement #}
+        <div class="workspace-card problem-metadata-card">
+          {% include "python_problems/partials/_problem_detail_info.html" %}
+        </div>
+        <div class="workspace-card">
+          {# Problem description #}
+          {% include "python_problems/partials/_problem_detail_description.html" %}
+        </div>
+        <div class="workspace-card testcase-workspace-card">
+          {% include "python_problems/partials/_problem_detail_test_cases.html" %}
+        </div>
+      </section>
+      <section class="problem-coding-panel" aria-label="Code editor and results">
+        <div class="workspace-card code-workspace-card">
+          <nav class="code-workspace-tabs" aria-label="Code panel views">
+            <button class="code-workspace-tab active"
+                    id="code-editor-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#code-editor-panel"
+                    type="button"
+                    role="tab"
+                    aria-controls="code-editor-panel"
+                    aria-selected="true">Code editor</button>
+            <button class="code-workspace-tab"
+                    id="solution-code-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#solution-code-panel"
+                    type="button"
+                    role="tab"
+                    aria-controls="solution-code-panel"
+                    aria-selected="false">Solution code</button>
+          </nav>
+          <div class="tab-content">
+            <div class="tab-pane fade show active"
+                 id="code-editor-panel"
+                 role="tabpanel"
+                 aria-labelledby="code-editor-tab">
+              {% include "python_problems/partials/_problem_detail_code_area.html" %}
+            </div>
+            <div class="tab-pane fade"
+                 id="solution-code-panel"
+                 role="tabpanel"
+                 aria-labelledby="solution-code-tab">
+              {% include "python_problems/partials/_problem_detail_solution.html" %}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-  </div>
+  </main>
 {% endblock content %}

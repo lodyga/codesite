@@ -136,8 +136,8 @@ test('navigation between problems works', async ({ page }) => {
     await page.goto('http://127.0.0.1:8000/problems/two-sum/Python/');
 
     // Check previous/next problem buttons exist
-    const prevButton = page.locator('text=Previous Problem');
-    const nextButton = page.locator('text=Next Problem');
+    const prevButton = page.locator('text=Previous');
+    const nextButton = page.locator('text=Next');
 
     // At least one should be visible (depending on if there are adjacent problems)
     const prevCount = await prevButton.count();
